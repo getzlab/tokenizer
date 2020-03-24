@@ -4,12 +4,12 @@ using namespace std;
 
 namespace GAC {
 
-void gac_walker::walk_apply(const SeqLib::BamRecord& record) {
+bool gac_walker::walk_apply(const SeqLib::BamRecord& record) {
    // advance to next read if read ends before current position
    // XXX: this might become a generic function in walker
-   if(record.ChrID() < curchr) continue;
+   if(record.ChrID() < curchr) return true;
    if(cur_read.ChrID() == curchr &&
-      cur_read.PositionEnd() < curpos) continue;
+      cur_read.PositionEnd() < curpos) return true;
 
    // advance position(s) if read starts after current position
    while((cur_read.Position() > curpos &&
@@ -66,6 +66,8 @@ void gac_walker::walk_apply(const SeqLib::BamRecord& record) {
       cur_read.Position() <= curpos && 
       cur_read.PositionEnd() >= curpos) {
 
+      uint32_t pos;
+
       // increment refcount along the whole span of the read in the buffer
       while((pos = curpos) < cur_read.PositionEnd()) pos_cache.increment(pos++, false);
 
@@ -73,27 +75,26 @@ void gac_walker::walk_apply(const SeqLib::BamRecord& record) {
       // 1. increment altcount(s) at the relevant location(s)
       // 2. decrement refcount(s) at location(s)
       if(!EDz(cur_read)) {
-	 uint32_t o = 0;
-	 uint32_t pos;
-
 	 vector<uint64_t> nrp = nonref_pos(cur_read);
 
 	 for(auto& p : nrp) {
 	    // sSNVs and insertions span single positions WRT reference
 	    if(p >> 62 <= 1) {
-	       poscache.increment(p & 0xFFFFFFFF, true);
-	       poscache.decrement(p & 0xFFFFFFFF, false);
+	       pos_cache.increment(p & 0xFFFFFFFF, true);
+	       pos_cache.decrement(p & 0xFFFFFFFF, false);
 
 	    // otherwise, it's a deletion, which spans multiple positions WRT reference
 	    } else {
 	       for(uint16_t i = 0; i < p >> 48 & 0x3FFF; i++) {
-		  poscache.increment(i + p & 0xFFFFFFFF, true);
-		  poscache.decrement(i + p & 0xFFFFFFFF, false);
+		  pos_cache.increment(i + p & 0xFFFFFFFF, true);
+		  pos_cache.decrement(i + p & 0xFFFFFFFF, false);
 	       }
 	    }
 	 }
       }
    }
+
+   return true;
 }
 
 }
