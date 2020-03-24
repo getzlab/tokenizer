@@ -61,19 +61,27 @@ void gac_walker::walk_apply(const SeqLib::BamRecord& record) {
       while((pos = curpos) < cur_read.PositionEnd()) pos_cache.increment(pos++, false);
 
       // if this read contains nonreference bases, we need to:
-      // 1. increment altcount at the relevant location
-      // 2. decrement refcount at that location
+      // 1. increment altcount(s) at the relevant location(s)
+      // 2. decrement refcount(s) at location(s)
       if(!EDz(cur_read)) {
 	 uint32_t o = 0;
 	 uint32_t pos;
 
 	 vector<uint64_t> nrp = nonref_pos(cur_read);
 
-	 // TODO: what does the original tokenizer do with deletions? does it span the whole deletion?
-	 //       if so, we need to update this.
 	 for(auto& p : nrp) {
-	    poscache.increment(p & 0xFFFFFFFF, true);
-	    poscache.decrement(p & 0xFFFFFFFF, false);
+	    // sSNVs and insertions span single positions WRT reference
+	    if(p >> 62 <= 1) {
+	       poscache.increment(p & 0xFFFFFFFF, true);
+	       poscache.decrement(p & 0xFFFFFFFF, false);
+
+	    // otherwise, it's a deletion, which spans multiple positions WRT reference
+	    } else {
+	       for(uint16_t i = 0; i < p >> 48 & 0x3FFF; i++) {
+		  poscache.increment(i + p & 0xFFFFFFFF, true);
+		  poscache.decrement(i + p & 0xFFFFFFFF, false);
+	       }
+	    }
 	 }
       }
    }
