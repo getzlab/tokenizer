@@ -1,6 +1,8 @@
 #include "walker/poscache.hpp"
 #include "walker/walker.hpp"
 
+#include <string>
+
 namespace GAC {
 
 typedef struct p {
@@ -29,13 +31,13 @@ class altrefcount : public walker::pos_cache<pileup_t> {
 class gac_walker : public walker::walker {
    public:
    // we may not need to define our own constructor here
-   // gac_walker(const string& bam_in, const string& ref_fa) : walker(bam_in, ref_fa) {}
-   void walk_apply(const SeqLib::BamRecord& record);
+   gac_walker(const std::string& bam_in, const std::string& ref_fa) : walker(bam_in, ref_fa) {}
+   bool walk_apply(const SeqLib::BamRecord& record);
 
    protected:
-   altrefcount counter;
+   altrefcount pos_cache;
    uint32_t curpos = 0;
    uint16_t curchr = 0;
-}
+};
 
 }
