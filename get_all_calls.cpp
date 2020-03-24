@@ -58,7 +58,7 @@ void gac_walker::walk_apply(const SeqLib::BamRecord& record) {
       pos_cache.erase(curpos);
 
       // next position
-      curpos++; // XXX: need to make sure this doesn't run off the end of the chromosome
+      increment_pos(curchr, curpos);
    }
 
    // if read overlaps the current position, increment alt/refcounts along its span of the buffer
