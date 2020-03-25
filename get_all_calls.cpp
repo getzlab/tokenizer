@@ -1,4 +1,5 @@
 #include "get_all_calls.hpp"
+#include "walker/argparse.hpp"
 
 using namespace std;
 
@@ -97,4 +98,18 @@ bool gac_walker::walk_apply(const SeqLib::BamRecord& record) {
    return true;
 }
 
+}
+
+int main(int argc, char** argv) {
+   walker::basic_arg_t args = {};
+   args.ref_fa = "/home/jhess/j/db/hg19/ref/hs37d5.fa";
+   if(!walker::basic_argparse(argc, argv, &args)) exit(1);
+   if(!walker::basic_argparse_validate(&args)) exit(1);
+
+   GAC::gac_walker w = GAC::gac_walker(args.bam_in, args.ref_fa);
+   if(!w.set_output_file(args.output_file)) exit(1);
+
+   w.walk();
+
+   return 0;
 }
