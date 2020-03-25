@@ -85,9 +85,9 @@ bool gac_walker::walk_apply(const SeqLib::BamRecord& record) {
 
 	    // otherwise, it's a deletion, which spans multiple positions WRT reference
 	    } else {
-	       for(uint16_t i = 0; i < p >> 48 & 0x3FFF; i++) {
-		  pos_cache.increment(i + p & 0xFFFFFFFF, true);
-		  pos_cache.decrement(i + p & 0xFFFFFFFF, false);
+	       for(uint16_t i = 0; i < (p >> 48 & 0x3FFF); i++) {
+		  pos_cache.increment(i + (p & 0xFFFFFFFF), true);
+		  pos_cache.decrement(i + (p & 0xFFFFFFFF), false);
 	       }
 	    }
 	 }
