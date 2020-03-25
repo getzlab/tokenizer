@@ -81,11 +81,21 @@ bool gac_walker::walk_apply(const SeqLib::BamRecord& record) {
       if(!EDz(record)) {
 	 vector<uint64_t> nrp = nonref_pos(record);
 
+	 uint8_t* quals = bam_get_qual(record.shared_pointer().get());
+
 	 for(auto& p : nrp) {
 	    // sSNVs and insertions span single positions WRT reference
-	    if(p >> 62 <= 1) {
-	       pos_cache.increment(p & 0xFFFFFFFF, true);
-	       pos_cache.decrement(p & 0xFFFFFFFF, false);
+	    uint8_t cigop;
+	    if((cigop = p >> 62) <= 1) {
+	       // we only update this position if base quality is high enough 
+	       // XXX: we are hardcoding the default value of 20 from the original Java,
+	       //      but in the future this should be user specifiable.
+	       if(quals[(p >> 32) & 0xFFFF] >= 20) {
+		  // cigop = 1 for insertion; original code updated position directly
+		  // preceding insertion.
+		  pos_cache.increment((p & 0xFFFFFFFF) - cigop, true);
+		  pos_cache.decrement((p & 0xFFFFFFFF) - cigop, false);
+	       }
 
 	    // otherwise, it's a deletion, which spans multiple positions WRT reference
 	    } else {
