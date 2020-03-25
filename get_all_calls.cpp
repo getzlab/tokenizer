@@ -6,6 +6,10 @@ using namespace std;
 namespace GAC {
 
 bool gac_walker::walk_apply(const SeqLib::BamRecord& record) {
+   // we are only interested in running on human primary contigs (chr1-Y)
+   // TODO: make this flexible, so that tool can generalize to other organisms
+   if(record.ChrID() > 23) return false;
+
    // advance to next read if read ends before current position
    // XXX: this might become a generic function in walker
    if(record.ChrID() < curchr) return true;
