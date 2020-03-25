@@ -53,7 +53,6 @@ bool gac_walker::walk_apply(const SeqLib::BamRecord& record) {
       if(alt_count >= 10 && alt_frac >= 0.20) { tok_i++; // 6
       } } } } } } }
 
-      //"-+123456"[tok_i]
       fwrite("-+123456" + tok_i, 1, 1, outfile);
 
       pos_cache.erase(curpos);
