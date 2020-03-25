@@ -8,13 +8,13 @@ bool gac_walker::walk_apply(const SeqLib::BamRecord& record) {
    // advance to next read if read ends before current position
    // XXX: this might become a generic function in walker
    if(record.ChrID() < curchr) return true;
-   if(cur_read.ChrID() == curchr &&
-      cur_read.PositionEnd() < curpos) return true;
+   if(record.ChrID() == curchr &&
+      record.PositionEnd() < curpos) return true;
 
    // advance position(s) if read starts after current position
-   while((cur_read.Position() > curpos &&
-	 cur_read.ChrID() == curchr) ||
-	 cur_read.ChrID() > curchr) {
+   while((record.Position() > curpos &&
+	 record.ChrID() == curchr) ||
+	 record.ChrID() > curchr) {
 
       // flush to disk 
       float alt_frac;
@@ -62,9 +62,9 @@ bool gac_walker::walk_apply(const SeqLib::BamRecord& record) {
    }
 
    // if read overlaps the current position, increment alt/refcounts along its span of the buffer
-   if(cur_read.ChrID() == curchr &&
-      cur_read.Position() <= curpos && 
-      cur_read.PositionEnd() >= curpos) {
+   if(record.ChrID() == curchr &&
+      record.Position() <= curpos && 
+      record.PositionEnd() >= curpos) {
 
       uint32_t pos;
 
@@ -74,8 +74,8 @@ bool gac_walker::walk_apply(const SeqLib::BamRecord& record) {
       // if this read contains nonreference bases, we need to:
       // 1. increment altcount(s) at the relevant location(s)
       // 2. decrement refcount(s) at location(s)
-      if(!EDz(cur_read)) {
-	 vector<uint64_t> nrp = nonref_pos(cur_read);
+      if(!EDz(record)) {
+	 vector<uint64_t> nrp = nonref_pos(record);
 
 	 for(auto& p : nrp) {
 	    // sSNVs and insertions span single positions WRT reference
