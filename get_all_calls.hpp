@@ -1,3 +1,6 @@
+#ifndef GAC_GUARD
+#define GAC_GUARD
+
 #include "walker/poscache.hpp"
 #include "walker/walker.hpp"
 
@@ -41,3 +44,5 @@ class gac_walker : public walker::walker {
 };
 
 }
+
+#endif
