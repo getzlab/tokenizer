@@ -48,14 +48,14 @@ bool gac_walker::walk_apply(const SeqLib::BamRecord& record) {
       */
 
       uint8_t tok_i = 0;
-      if(alt_count + ref_count >= 8) { tok_i++; // +
-      if(alt_count >= 1 && alt_frac >= 0.001) { tok_i++; // 1
-      if(alt_count >= 2 && alt_frac >= 0.003) { tok_i++; // 2
-      if(alt_count >= 3 && alt_frac >= 0.01) { tok_i++; // 3
-      if(alt_count >= 3 && alt_frac >= 0.03) { tok_i++; // 4
-      if(alt_count >= 3 && alt_frac >= 0.20) { tok_i++; // 5
-      if(alt_count >= 10 && alt_frac >= 0.20) { tok_i++; // 6
-      } } } } } } }
+      if(alt_count + ref_count >= 8)            tok_i = 1; // +
+      if(alt_count >= 1 && alt_frac >= 0.001) { tok_i = 2; // 1
+      if(alt_count >= 2 && alt_frac >= 0.003) { tok_i = 3; // 2
+      if(alt_count >= 3 && alt_frac >= 0.01)  { tok_i = 4; // 3
+      if(alt_count >= 3 && alt_frac >= 0.03)  { tok_i = 5; // 4
+      if(alt_count >= 3 && alt_frac >= 0.20)  { tok_i = 6; // 5
+      if(alt_count >= 10 && alt_frac >= 0.20) { tok_i = 7; // 6
+      } } } } } }
 
       fwrite("-+123456" + tok_i, 1, 1, outfile);
 
