@@ -72,9 +72,10 @@ bool gac_walker::walk_apply(const SeqLib::BamRecord& record) {
       record.PositionEnd() >= curpos) {
 
       uint32_t pos = curpos;
+      uint32_t readend = record.PositionEnd();
 
       // increment refcount along the whole span of the read in the buffer
-      while(pos < record.PositionEnd()) pos_cache.increment(pos++, false);
+      while(pos < readend) pos_cache.increment(pos++, false);
 
       // if this read contains nonreference bases, we need to:
       // 1. increment altcount(s) at the relevant location(s)
