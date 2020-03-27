@@ -1,4 +1,4 @@
-FROM ubuntu AS base
+FROM ubuntu:18.04 AS base
 
 WORKDIR build
 
@@ -37,11 +37,10 @@ RUN cd /build/tokenizer && \
 
 # package into minimal image
 
-FROM frolvlad/alpine-glibc
+FROM ubuntu:18.04
 
-WORKDIR run
+WORKDIR app
 
-RUN apk --no-cache add libcurl openssl zlib xz-libs libbz2 libstdc++ && \
-  ln -s /usr/lib/libbz2.so.1.0.8 /usr/lib/libbz2.so.1.0
+RUN apt-get update && apt-get -y install zlib1g libbz2-dev liblzma-dev libcurl4-openssl-dev libssl-dev && apt-get clean
 
 COPY --from=base /build/tokenizer/get_all_calls .
