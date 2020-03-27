@@ -37,6 +37,9 @@ RUN cd /build/tokenizer && \
 
 # package into minimal image
 
+# TODO: can we statically link the binary and run it in an Alpine image?
+#       seems that libcurl has static linking issues -- need to look into this.
+
 FROM ubuntu:18.04
 
 WORKDIR app
