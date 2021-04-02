@@ -1,3 +1,3 @@
 [submodule "walker"]
-	path = walker
+	path = src/walker
 	url = git@github.com:broadinstitute/walker.git
